@@ -1,5 +1,6 @@
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
-
+import { Link } from "react-router-dom";
+import { FaUser, FaPhone } from "react-icons/fa";
 const Footer = () => {
     return (
         <footer className="border-t border-gray-200 bg-white mt-12">
@@ -13,6 +14,24 @@ const Footer = () => {
 
                 {/* Social Icons */}
                 <div className="flex items-center gap-5 text-xl">
+                    {/* About Me */}
+                    <Link
+                        to="/about"
+                        className="hover:text-black transition"
+                        aria-label="About Me"
+                    >
+                        <FaUser />
+                    </Link>
+
+                    {/* Contact Me */}
+                    <Link
+                        to="/contact"
+                        className="hover:text-black transition"
+                        aria-label="Contact Me"
+                    >
+                        <FaPhone />
+                    </Link>
+
                     <a
                         href="https://github.com/PranayManapure"
                         target="_blank"

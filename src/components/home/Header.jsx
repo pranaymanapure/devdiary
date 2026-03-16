@@ -1,19 +1,39 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import axiosInstance from "../../services/axiosInstance";
+import { logout } from "../../redux/authSlice";
 
 const Header = () => {
     const { userData: user } = useSelector((state) => state.auth);
     const [profileOpen, setProfileOpen] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const toggleProfile = () => {
         setProfileOpen(!profileOpen);
     };
 
+    const handleLogout = async () => {
+        try {
+            await axiosInstance.post("/users/logout");
+            dispatch(logout());
+            setProfileOpen(false);
+            toast.success("Logged out successfully");
+            navigate("/");
+        } catch (error) {
+            dispatch(logout());
+            setProfileOpen(false);
+            navigate("/");
+        }
+    };
+
     return (
-        <header className="border-b border-gray-200 bg-white w-full">
-            <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+        <header className="fixed top-0 left-0 w-full z-50 border-b border-gray-200 glass">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
                 {/* Logo */}
+                {/* <Logo /> */}
                 <Link
                     to="/"
                     className="text-[22px] md:text-[26px] font-serif font-bold tracking-tight text-black"
@@ -56,9 +76,13 @@ const Header = () => {
                         <div className="relative">
                             <button
                                 onClick={toggleProfile}
-                                className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center font-medium"
+                                className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center font-medium overflow-hidden"
                             >
-                                {user.fullname?.charAt(0).toUpperCase()}
+                                {user.avatar ? (
+                                    <img src={user.avatar} alt={user.fullname} className="w-full h-full object-cover" />
+                                ) : (
+                                    user.fullname?.charAt(0).toUpperCase()
+                                )}
                             </button>
 
                             {profileOpen && (
@@ -75,7 +99,7 @@ const Header = () => {
                                     >
                                         My Blogs
                                     </Link>
-                                    <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">
                                         Logout
                                     </button>
                                 </div>
@@ -107,21 +131,38 @@ const Header = () => {
                             </Link>
                         </>
                     ) : (
-                        <>
-                            <Link
-                                to="/my-blogs"
-                                className="text-gray-700 font-medium"
-                            >
-                                My Blogs
-                            </Link>
-
+                        <div className="relative">
                             <button
                                 onClick={toggleProfile}
-                                className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm"
+                                className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm overflow-hidden"
                             >
-                                {user.fullname?.charAt(0).toUpperCase()}
+                                {user.avatar ? (
+                                    <img src={user.avatar} alt={user.fullname} className="w-full h-full object-cover" />
+                                ) : (
+                                    user.fullname?.charAt(0).toUpperCase()
+                                )}
                             </button>
-                        </>
+
+                            {profileOpen && (
+                                <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-md z-50">
+                                    <Link
+                                        to="/profile"
+                                        className="block px-4 py-2 hover:bg-gray-100 text-sm"
+                                    >
+                                        Profile
+                                    </Link>
+                                    <Link
+                                        to="/my-blogs"
+                                        className="block px-4 py-2 hover:bg-gray-100 text-sm"
+                                    >
+                                        My Blogs
+                                    </Link>
+                                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-600">
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </nav>
             </div>
